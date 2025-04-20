@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Failure Prediction</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/prediction.css}">
+</head>
+<body>
+<div class="page-container">
+    <header class="page-header">
+        <h1>Heart Failure Prediction</h1>
+        <div class="user-info" sec:authorize="isAuthenticated()">
+            Logged in as: <span sec:authentication="name">Username</span> |
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}" />
+                <button type="submit" class="logout-button">Logout</button>
+            </form>
+        </div>
+    </header>
+
+    <div class="form-container">
+        <h2>Enter Patient Data</h2>
+
+        <form th:action="@{/predict}" th:object="${predictionFormData}" method="post" novalidate>
+            <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}" />
+
+            <div th:if="${#fields.hasErrors('*')}" class="error-message global-error">
+                <p>There were errors in the form:</p>
+                <ul>
+                    <li th:each="err : ${#fields.allErrors()}" th:text="${err}">Error message</li>
+                </ul>
+            </div>
+
+            <div th:if="${predictionError}" class="error-message global-error" th:text="${predictionError}">
+                Server error message.
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="age">Age:</label>
+                    <input type="number" id="age" th:field="*{age}" required min="1" max="120"
+                           th:classappend="${#fields.hasErrors('age')} ? 'is-invalid' : ''" />
+                    <span th:if="${#fields.hasErrors('age')}" class="field-error" th:errors="*{age}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="sex">Sex:</label>
+                    <select id="sex" th:field="*{sex}" required
+                            th:classappend="${#fields.hasErrors('sex')} ? 'is-invalid' : ''">
+                        <option value="">-- Select --</option>
+                        <option th:each="s : ${T(com.xhamera1.heart_failure_predictor.model.enums.SexEnum).values()}"
+                                th:value="${s.code}" th:text="${s.displayName}"></option>
+                    </select>
+                    <span th:if="${#fields.hasErrors('sex')}" class="field-error" th:errors="*{sex}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="chestPainType">Chest Pain Type:</label>
+                    <select id="chestPainType" th:field="*{chestPainType}" required
+                            th:classappend="${#fields.hasErrors('chestPainType')} ? 'is-invalid' : ''">
+                        <option value="">-- Select --</option>
+                        <option th:each="cpt : ${T(com.xhamera1.heart_failure_predictor.model.enums.ChestPainTypeEnum).values()}"
+                                th:value="${cpt.code}" th:text="${cpt.displayName}"></option>
+                    </select>
+                    <span th:if="${#fields.hasErrors('chestPainType')}" class="field-error" th:errors="*{chestPainType}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="restingBP">Resting BP [mm Hg]:</label>
+                    <input type="number" id="restingBP" th:field="*{restingBP}" required min="0"
+                           th:classappend="${#fields.hasErrors('restingBP')} ? 'is-invalid' : ''" />
+                    <span th:if="${#fields.hasErrors('restingBP')}" class="field-error" th:errors="*{restingBP}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="cholesterol">Cholesterol [mg/dl]:</label> <input type="number" id="cholesterol" th:field="*{cholesterol}" required min="0"
+                                                                                 th:classappend="${#fields.hasErrors('cholesterol')} ? 'is-invalid' : ''" />
+                    <span th:if="${#fields.hasErrors('cholesterol')}" class="field-error" th:errors="*{cholesterol}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="fastingBS">Fasting Blood Sugar > 120 mg/dl:</label>
+                    <select id="fastingBS" th:field="*{fastingBS}" required
+                            th:classappend="${#fields.hasErrors('fastingBS')} ? 'is-invalid' : ''">
+                        <option value="">-- Select --</option>
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                    <span th:if="${#fields.hasErrors('fastingBS')}" class="field-error" th:errors="*{fastingBS}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="restingECG">Resting ECG:</label>
+                    <select id="restingECG" th:field="*{restingECG}" required
+                            th:classappend="${#fields.hasErrors('restingECG')} ? 'is-invalid' : ''">
+                        <option value="">-- Select --</option>
+                        <option th:each="recg : ${T(com.xhamera1.heart_failure_predictor.model.enums.RestingECGEnum).values()}"
+                                th:value="${recg.code}" th:text="${recg.displayName}"></option>
+                    </select>
+                    <span th:if="${#fields.hasErrors('restingECG')}" class="field-error" th:errors="*{restingECG}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="maxHR">Max Heart Rate:</label>
+                    <input type="number" id="maxHR" th:field="*{maxHR}" required min="1"
+                           th:classappend="${#fields.hasErrors('maxHR')} ? 'is-invalid' : ''" />
+                    <span th:if="${#fields.hasErrors('maxHR')}" class="field-error" th:errors="*{maxHR}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="exerciseAngina">Exercise Angina:</label>
+                    <select id="exerciseAngina" th:field="*{exerciseAngina}" required
+                            th:classappend="${#fields.hasErrors('exerciseAngina')} ? 'is-invalid' : ''">
+                        <option value="">-- Select --</option>
+                        <option th:each="ea : ${T(com.xhamera1.heart_failure_predictor.model.enums.ExerciseAnginaEnum).values()}"
+                                th:value="${ea.numericValue}" th:text="${ea.displayName}"></option>
+                    </select>
+                    <span th:if="${#fields.hasErrors('exerciseAngina')}" class="field-error" th:errors="*{exerciseAngina}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="oldpeak">Oldpeak:</label>
+                    <input type="number" step="0.1" id="oldpeak" th:field="*{oldpeak}" required
+                           th:classappend="${#fields.hasErrors('oldpeak')} ? 'is-invalid' : ''" />
+                    <span th:if="${#fields.hasErrors('oldpeak')}" class="field-error" th:errors="*{oldpeak}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="stSlope">ST Slope:</label>
+                    <select id="stSlope" th:field="*{stSlope}" required
+                            th:classappend="${#fields.hasErrors('stSlope')} ? 'is-invalid' : ''">
+                        <option value="">-- Select --</option>
+                        <option th:each="slope : ${T(com.xhamera1.heart_failure_predictor.model.enums.STSlopeEnum).values()}"
+                                th:value="${slope.code}" th:text="${slope.displayName}"></option>
+                    </select>
+                    <span th:if="${#fields.hasErrors('stSlope')}" class="field-error" th:errors="*{stSlope}"></span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn predict-btn">Predict</button>
+        </form>
+    </div>
+
+    <div id="predictionResultArea" class="result-container" th:if="${predictionResult}">
+        <h2>Prediction Result</h2>
+        <div th:if="${predictionError}" class="error-message global-error" th:text="${predictionError}">
+            Server error message during prediction.
+        </div>
+        <div th:unless="${predictionError}">
+            <p>
+                Status: <strong th:text="${predictionResult.prediction == 1 ? 'Heart Disease Risk Detected' : 'No Heart Disease Risk Detected'}">Result</strong>
+            </p>
+            <p th:if="${predictionResult.prediction == 1}">
+                Probability of Disease: <span th:text="${#numbers.formatDecimal(predictionResult.probability_1 * 100, 1, 1)} + '%'"></span>
+            </p>
+            <p th:if="${predictionResult.prediction == 0}">
+                Probability of No Disease: <span th:text="${#numbers.formatDecimal(predictionResult.probability_0 * 100, 1, 1)} + '%'"></span>
+            </p>
+        </div>
+    </div>
+
+    <div class="history-link" sec:authorize="isAuthenticated()">
+        <a th:href="@{/history}">View Prediction History</a> </div>
+
+</div>
+</body>
+</html>
