@@ -1,0 +1,120 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 20px;
+    color: #343a40;
+    line-height: 1.6;
+}
+
+.page-container {
+    max-width: 1000px;
+    margin: 20px auto;
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+}
+.page-header h1 { margin: 0; font-size: 1.8em; font-weight: 500; color: #0056b3; }
+.user-info { font-size: 0.9em; color: #6c757d; }
+.user-info span { font-weight: 600; }
+.logout-button { background: none; border: none; color: #007bff; cursor: pointer; padding: 0 5px; font-size: inherit; text-decoration: underline; }
+.logout-button:hover { color: #0056b3; }
+
+.content-container h2 {
+    text-align: center;
+    color: #495057;
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-weight: 400;
+}
+
+.navigation-link {
+    text-align: right;
+    margin-bottom: 15px;
+}
+.navigation-link a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+.navigation-link a:hover {
+    text-decoration: underline;
+}
+
+
+.empty-history-message {
+    text-align: center;
+    padding: 30px;
+    color: #6c757d;
+    background-color: #e9ecef;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.history-table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 0.95em;
+}
+
+th, td {
+    border: 1px solid #dee2e6;
+    padding: 10px 12px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+thead th {
+    background-color: #e9ecef;
+    font-weight: 600;
+    color: #495057;
+}
+
+tbody tr:nth-of-type(odd) {
+    background-color: #f8f9fa;
+}
+
+tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.outcome-healthy {
+    background-color: #dff0d8 !important;
+}
+
+.outcome-diseased {
+    background-color: #f8d7da !important;
+}
+
+td {
+    color: #212529;
+}
+
+.error-message {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.global-error {
+    border: 1px solid #f5c6cb;
+}

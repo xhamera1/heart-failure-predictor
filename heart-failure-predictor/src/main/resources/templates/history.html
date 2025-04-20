@@ -1,10 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction History - Heart Failure Predictor</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/prediction.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/history.css}">
 </head>
 <body>
-$END$
+<div class="page-container">
+    <header class="page-header">
+        <h1>Prediction History</h1>
+        <div class="user-info" sec:authorize="isAuthenticated()">
+            Logged in as: <span sec:authentication="name">Username</span> |
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}" />
+                <button type="submit" class="logout-button">Logout</button>
+            </form>
+        </div>
+    </header>
+
+    <div class="content-container">
+        <div class="navigation-link">
+            <a th:href="@{/predict}">Make a New Prediction</a>
+        </div>
+
+        <h2>Your Past Predictions</h2>
+
+        <div th:if="${historyError}" class="error-message global-error" th:text="${historyError}">
+            Server error message.
+        </div>
+
+        <div th:if="${predictionHistory != null and #lists.isEmpty(predictionHistory) and historyError == null}" class="empty-history-message">
+            You have no prediction history yet.
+        </div>
+
+        <div th:if="${predictionHistory != null and not #lists.isEmpty(predictionHistory)}" class="history-table-container">
+            <table>
+                <thead>
+                <tr>
+                    <th>Date & Time</th>
+                    <th>Age</th>
+                    <th>Sex</th>
+                    <th>Chest Pain</th>
+                    <th>Resting BP</th>
+                    <th>Cholesterol</th>
+                    <th>Fasting BS</th>
+                    <th>Resting ECG</th>
+                    <th>Max HR</th>
+                    <th>Exercise Angina</th>
+                    <th>Oldpeak</th>
+                    <th>ST Slope</th>
+                    <th>Predicted Outcome</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="record : ${predictionHistory}"
+                    th:classappend="${record.predictedOutcome} ? 'outcome-diseased' : 'outcome-healthy'">
+
+                    <td th:text="${#temporals.format(record.predictionTimestamp, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:text="${record.age}"></td>
+                    <td th:text="${record.sex}"></td>
+                    <td th:text="${record.chestPainType}"></td>
+                    <td th:text="${record.restingBP}"></td>
+                    <td th:text="${record.cholesterol}"></td>
+                    <td th:text="${record.fastingBS ? 'Yes (>120)' : 'No (<=120)'}"></td>
+                    <td th:text="${record.restingECG}"></td>
+                    <td th:text="${record.maxHR}"></td>
+                    <td th:text="${record.exerciseAngina}"></td>
+                    <td th:text="${#numbers.formatDecimal(record.oldpeak, 1, 1)}"></td>
+                    <td th:text="${record.stSlope}"></td>
+                    <td th:text="${record.predictedOutcome ? 'Diseased' : 'Healthy'}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 </body>
 </html>

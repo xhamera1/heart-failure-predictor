@@ -3,12 +3,15 @@ package com.xhamera1.heart_failure_predictor.service;
 import com.xhamera1.heart_failure_predictor.dto.PredictionRecordDto;
 import com.xhamera1.heart_failure_predictor.dto.PredictionRequestDto;
 import com.xhamera1.heart_failure_predictor.dto.PredictionResponseDto;
+import com.xhamera1.heart_failure_predictor.dto.UserDto;
 import com.xhamera1.heart_failure_predictor.exceptions.PredictionApiException;
 import com.xhamera1.heart_failure_predictor.exceptions.ResourceAlreadyExistsException;
+import com.xhamera1.heart_failure_predictor.exceptions.ResourceNotFoundException;
 import com.xhamera1.heart_failure_predictor.model.PredictionRecord;
 import com.xhamera1.heart_failure_predictor.model.User;
 import com.xhamera1.heart_failure_predictor.model.enums.*;
 import com.xhamera1.heart_failure_predictor.repository.PredictionRecordRepository;
+import com.xhamera1.heart_failure_predictor.repository.UserRepository;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,13 +34,17 @@ public class PredictionService {
     private final PredictionRecordRepository predictionRecordRepository;
     private final RestTemplate restTemplate;
     private final String predictionApiUrl;
+    private final UserService userService;
+    private final UserRepository userRepository;
 
 
     @Autowired
-    public PredictionService(PredictionRecordRepository predictionRecordRepository, RestTemplate restTemplate, @Value("${prediction.api.url}") String predictionApiUrl) {
+    public PredictionService(PredictionRecordRepository predictionRecordRepository, RestTemplate restTemplate, @Value("${prediction.api.url}") String predictionApiUrl, UserService userService, UserRepository userRepository) {
         this.predictionRecordRepository = predictionRecordRepository;
         this.restTemplate = restTemplate;
         this.predictionApiUrl = predictionApiUrl;
+        this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     public PredictionResponseDto getPredictionFromApi(PredictionRequestDto predictionRequestDto) {
@@ -85,7 +92,16 @@ public class PredictionService {
     }
 
     @Transactional(readOnly = true)
-    public List<PredictionRecordDto> getPredictionRecordHistoryForUser(User user) {
+    public List<PredictionRecordDto> getPredictionRecordHistoryForUserByUsername(String username) throws ResourceNotFoundException {
+        User user;
+        try{
+            user = userService.findUserEntityByUsername(username);
+        }
+        catch (ResourceNotFoundException e) {
+            log.warn("User with username : {} not found", username);
+            throw new ResourceNotFoundException("User with username : " + username + " not found");
+        }
+
         log.debug("Retrieving prediction history for user ID: {}", user.getId());
 
         List<PredictionRecord> predictionRecords = predictionRecordRepository.findByUserOrderByIdDesc(user);
@@ -98,6 +114,7 @@ public class PredictionService {
 
         return predictionRecordDtoList;
     }
+
 
 
     private PredictionRecordDto mapPredictionRecordToDto(PredictionRecord predictionRecord) {
@@ -134,6 +151,8 @@ public class PredictionService {
 
         return dto;
     }
+
+
 
 
 }
