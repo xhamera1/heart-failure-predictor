@@ -1,13 +1,9 @@
--- Drop the database if it exists
 DROP DATABASE IF EXISTS heartfailure_db;
 
--- Create the heartfailure_db database (Note: original comment mentioned 'todorails schema', updated name)
 CREATE DATABASE heartfailure_db;
 
--- Select the heartfailure_db database for use
 USE heartfailure_db;
 
--- Create User table
 CREATE TABLE users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
@@ -16,16 +12,11 @@ CREATE TABLE users (
     roles VARCHAR(255) NOT NULL
 );
 
--- Create Prediction Records table (Note: original comment mentioned 'Task table')
 CREATE TABLE prediction_records (
-    -- Unique identifier for the prediction record
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
 
-    -- Foreign key referencing the user who made the prediction
-    -- Assumes you have a 'users' table with a BIGINT 'id' primary key column
     user_id BIGINT NOT NULL,
 
-    -- Input features from the form (corresponding to dataset columns)
     age INT NOT NULL,                       -- Patient's age
     sex ENUM('M', 'F') NOT NULL,            -- Sex (M - Male, F - Female)
     chest_pain_type ENUM('ATA', 'NAP', 'ASY', 'TA') NOT NULL, -- Type of chest pain
@@ -41,7 +32,6 @@ CREATE TABLE prediction_records (
     -- Prediction result returned by the ML model
     predicted_heart_disease BOOLEAN NOT NULL, -- Predicted outcome (1 = heart disease, 0 = none)
 
-    -- Timestamp of the prediction
     prediction_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (user_id) REFERENCES users(id)
