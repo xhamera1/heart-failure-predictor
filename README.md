@@ -33,7 +33,7 @@ This project provides a web-based interface for predicting the likelihood of hea
 * **Prediction API (Flask):**
     * Serves a pre-trained Gradient Boosting Classifier model.
     * Provides a `/predict` REST endpoint accepting POST requests with JSON data.
-    * Returns prediction results (0 or 1) and class probabilities (0 and 1) as JSON.
+    * Returns the predicted class (0 or 1) and the calculated probabilities for class 0 (probability_0) and class 1 (probability_1) as JSON.
     * Handles basic error checking for input feature count.
 
 ## Machine Learning Model Details
