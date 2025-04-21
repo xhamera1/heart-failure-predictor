@@ -188,7 +188,7 @@ The web application should start, typically listening on `http://localhost:8080`
 ## UI Design & Mockups
 
 Detailed UI designs and prototypes for the web application can be found in Figma:
-[View Figma Designs](https://github.com/xhamera1/heart-failure-predictor) TODO
+[View Figma Designs](https://www.figma.com/design/YtGk5h9T5AtDTetusD6Nh1/Untitled?node-id=0-1&t=SzOO5P5K3npKAaxj-1) 
 
 
 ## License
